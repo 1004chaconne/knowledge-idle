@@ -1,0 +1,13 @@
+# 一律不做换行符转换：仓库里存什么字节，检出来就是什么字节。
+# 这条对本项目很关键 —— 部署时靠 md5 比对本地/服务器文件，
+# 一旦 git 把 LF 转成 CRLF，md5 就变了，会误判成"文件被改过"。
+* -text
+
+# 二进制资源明确标记（避免被当文本 diff）
+*.png binary
+*.jpg binary
+*.webp binary
+*.mp3 binary
+*.ogg binary
+*.wav binary
+*.woff2 binary

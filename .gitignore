@@ -1,0 +1,33 @@
+# ---------- 依赖 ----------
+node_modules/
+
+# ---------- 发布包（dist/build.sh 生成，回服务器上取）----------
+dist/*.tar.gz
+dist/*.zip
+
+# ---------- 生产密钥与运行时数据 ----------
+# ecosystem.config.js 里有线上真实的 COOKIE_SECRET，模板见 ecosystem.config.example.js
+server/ecosystem.config.js
+server/.env
+server/data/
+*.db
+*.db-journal
+
+# ---------- 无头浏览器 profile（Chrome 缓存，每个 3~7MB）----------
+tools/cdp-*/
+
+# ---------- 备份 / 临时 ----------
+*.bak
+*.bak-*
+*.orig
+tools/_data-before-attr2.js
+*.log
+*.tmp
+
+# ---------- 验证截图（工作产物，不进仓库）----------
+/*.png
+
+# ---------- 系统 ----------
+.DS_Store
+Thumbs.db
+desktop.ini

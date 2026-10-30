@@ -1,0 +1,165 @@
+/* ============================================================
+   概念（CONCEPT）：游戏里真正在流通的东西
+   ------------------------------------------------------------
+   一本书讲的是「某段历史」，一张卡讲的是「某个瞬间」，
+   但底下真正被反复讨论的，是十几个概念：以太、熵、场、不确定性……
+
+   同一个概念会在书、知识卡、BOSS 的怪癖、装备的专属能力里反复出现。
+   每打通一处，你对它的理解就深一层 —— 而这一层会变成很小的数值加成。
+
+   为什么加成故意做得很小（满级也就 2%–6%）：
+   这是「读书的副产品」，不是「读书的目的」。它应该让你觉得「有点用」，
+   而不是逼你去刷。真正值钱的是你知道这件事本身。
+   ============================================================ */
+const CONCEPTS = [
+  {
+    id:'aether', name:'以太', icon:'🫧',
+    line:'一种被认为充满整个宇宙、专门用来承载光波的介质。所有寻找它的实验都失败了 —— 于是它被删掉了，光不再需要任何东西来托着。',
+    bonusText:'技能冷却 -2%',
+    stats:{ cdMul:-0.02 },
+    sources:[
+      { type:'book', id:'diancitonglun', note:'麦克斯韦方程组里还留着以太' },
+      { type:'book', id:'bodong', note:'光被当成一种振动——振动得有介质' },
+      { type:'card', id:'c5', note:'赫兹：这东西没有用' },
+      { type:'card', id:'c15', note:'迈克尔逊-莫雷的零结果' },
+      { type:'quirk', id:'ether', note:'菲涅尔的「以太护盾」' },
+    ],
+  },
+  {
+    id:'entropy', name:'熵', icon:'♨️',
+    line:'一个只增不减的量。物理定律对时间几乎都是对称的，只有它不对称 —— 这就是为什么你记得昨天，不记得明天。',
+    bonusText:'受到伤害 -3%',
+    stats:{ dmgCut:0.03 },
+    sources:[
+      { type:'book', id:'shang', note:'一本越读越厚的书' },
+      { type:'book', id:'reqixunhuan', note:'卡诺循环：效率的天花板' },
+      { type:'card', id:'c12', note:'造不出来的理想机器' },
+      { type:'card', id:'c13', note:'时间之箭' },
+      { type:'quirk', id:'entropy', note:'卡诺的「熵增」' },
+    ],
+  },
+  {
+    id:'evolution', name:'演化', icon:'🌿',
+    line:'不需要设计者的设计。只要有变异、遗传和选择，复杂的东西就会自己长出来 —— 这个过程没有方向，也没有终点。',
+    bonusText:'持续伤害 +6%',
+    stats:{ ampEq:0.06 },
+    sources:[
+      { type:'book', id:'qiyuan', note:'二十二年不敢发表' },
+      { type:'book', id:'ziranxitong', note:'先有名字，才有秩序' },
+      { type:'card', id:'c10', note:'达尔文的沉默' },
+      { type:'card', id:'c11', note:'那棵树没有顶端' },
+      { type:'combo', id:'redqueen', note:'红皇后：必须一直跑' },
+    ],
+  },
+  {
+    id:'axiom', name:'公理', icon:'📐',
+    line:'不能被证明、也不必被证明的那句话。整个体系都站在它上面 —— 换掉它，你会得到另一个同样自洽的世界。',
+    bonusText:'技能伤害 +3%',
+    stats:{ ampEq:0.03 },
+    sources:[
+      { type:'book', id:'jihe', note:'五条公设推出四百六十五条命题' },
+      { type:'book', id:'digongshe', note:'假设它不成立会怎样' },
+      { type:'card', id:'c7', note:'点是没有部分的东西' },
+      { type:'card', id:'c8', note:'第五公设：绕过去' },
+      { type:'sig', id:'sigPrincipia', note:'牛顿手稿的「公理化」' },
+    ],
+  },
+  {
+    id:'field', name:'场', icon:'🌐',
+    line:'两个物体不接触，力却传过去了。法拉第用「力线」把这件事画出来，麦克斯韦把它写成方程 —— 空间本身成了参与者。',
+    bonusText:'暴击率 +2%',
+    stats:{ critAdd:0.02 },
+    sources:[
+      { type:'book', id:'dianci', note:'变化的磁场生出电流' },
+      { type:'book', id:'tongyi', note:'把引力与电磁写成同一件事' },
+      { type:'card', id:'c3', note:'牛顿手稿里那张不属于那个世纪的纸' },
+      { type:'card', id:'c4', note:'让磁场转起来' },
+      { type:'combo', id:'induction', note:'感应风暴' },
+    ],
+  },
+  {
+    id:'conservation', name:'守恒', icon:'⚖️',
+    line:'东西不会凭空出现，也不会凭空消失 —— 它只是换了地方，或者换了形态。整座现代科学的第一步，就是学会记账。',
+    bonusText:'书页产出 +6%',
+    stats:{ pageMul:0.06 },
+    sources:[
+      { type:'book', id:'zhiliang', note:'烧完之后一毫克都没少' },
+      { type:'book', id:'ranshao', note:'把燃烧从玄学变成称重' },
+      { type:'card', id:'c18', note:'一毫克' },
+      { type:'card', id:'c19', note:'最后一次实验' },
+      { type:'combo', id:'perpetual', note:'热力学第一定律' },
+    ],
+  },
+  {
+    id:'uncertainty', name:'不确定性', icon:'🎲',
+    line:'你越精确地知道它在哪，就越不知道它要去哪。这不是仪器不够好，是世界本来的样子。',
+    bonusText:'暴击伤害 +4%',
+    stats:{ critDmg:0.04 },
+    sources:[
+      { type:'book', id:'cebuzhun', note:'位置与动量不可兼得' },
+      { type:'book', id:'yueqian', note:'不经过中间地带' },
+      { type:'card', id:'c16', note:'盒子里的猫' },
+      { type:'card', id:'c17', note:'不看时月亮在哪' },
+      { type:'quirk', id:'leap', note:'玻尔的「跃迁」' },
+    ],
+  },
+  {
+    id:'light', name:'光的本性', icon:'💡',
+    line:'它是波还是粒子？这场争论持续了三百年，最后的答案是：你问它是波，它就是波；你问它是粒子，它就是粒子。',
+    bonusText:'命中弱点时额外 +4%',
+    stats:{ affAdd:0.04 },
+    sources:[
+      { type:'book', id:'guangxingcha', note:'恒星位置的偏移' },
+      { type:'book', id:'bodong', note:'光是一种振动' },
+      { type:'card', id:'c14', note:'阴影中心的那个亮点' },
+      { type:'sig', id:'sigNoAberration', note:'牛顿反射镜的「消色差」' },
+      { type:'combo', id:'dualism', note:'波粒二象性' },
+    ],
+  },
+  {
+    id:'number', name:'数论', icon:'🔢',
+    line:'关于整数的一些看起来毫无用处的规律。它们花了两千年才被认真对待，然后成了你今天每一次网购背后的锁。',
+    bonusText:'暴击伤害 +4%',
+    stats:{ critDmg:0.04 },
+    sources:[
+      { type:'book', id:'tongyu', note:'模 n 的世界' },
+      { type:'book', id:'suanshu', note:'七章重铺数论地基' },
+      { type:'combo', id:'formalize', note:'形式化：换一个模数' },
+    ],
+  },
+  {
+    id:'infinity', name:'无穷', icon:'∞',
+    line:'无限多项相加，可以是一个有限的数。这句话说完，人类才第一次真正追上芝诺的乌龟。',
+    bonusText:'洞见产出 +3%',
+    stats:{ rateEq:0.03 },
+    sources:[
+      { type:'book', id:'jixian', note:'无限地靠近' },
+      { type:'book', id:'wuqiongxiao', note:'欧拉把无穷小当成一个数' },
+      { type:'card', id:'c9', note:'无王者之路' },
+    ],
+  },
+  {
+    id:'value', name:'价值', icon:'💵',
+    line:'东西值多少钱，不由它包含多少劳动决定，而由别人愿意为它付多少决定。这句话一旦成立，泡沫就有了理论依据。',
+    bonusText:'装备掉率 +2%',
+    stats:{ paraEq:0.02 },
+    sources:[
+      { type:'book', id:'guofu', note:'看不见的手' },
+      { type:'book', id:'tonglun', note:'需求不足时市场不会自己恢复' },
+      { type:'book', id:'nanhai', note:'一张纸涨了十倍又跌回去' },
+      { type:'sig', id:'sigThought', note:'爱因斯坦烟斗的「思想实验」' },
+    ],
+  },
+  {
+    id:'doubt', name:'怀疑', icon:'🕳️',
+    line:'把一切可疑的都扔掉，直到剩下那个不能怀疑的东西。这不是虚无，是给知识找一个不会被推倒的地基。',
+    bonusText:'受到伤害 -2%',
+    stats:{ dmgCut:0.02 },
+    sources:[
+      { type:'book', id:'chensi', note:'我思故我在' },
+      { type:'book', id:'chuncui', note:'为信仰留出地盘' },
+      { type:'book', id:'lixiangguo', note:'洞穴里的影子' },
+      { type:'quirk', id:'blind', note:'笛卡尔的「蔽障」' },
+    ],
+  },
+];

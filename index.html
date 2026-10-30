@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>知识即力量 · Sapere Aude</title>
+<!-- 版本号 ?v= 用于破浏览器缓存：每次发布都要 +1，否则玩家看到的还是旧 JS -->
+<link rel="stylesheet" href="assets/style.css?v=0.28">
+</head>
+<body>
+<div id="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">Sapere Aude</span>
+      <span class="brand-sub" id="era-label">第 1 纪元 · 常识</span>
+    </div>
+    <div class="res">
+      <div class="res-item" title="研读书籍产出，用于升级书籍等级">
+        <span class="res-icon i-insight">◈</span>
+        <span class="res-val" id="r-insight">0</span>
+        <span class="res-rate" id="r-insight-rate">+0/s</span>
+      </div>
+      <div class="res-item" title="关卡掉落，用于书籍升阶与合成">
+        <span class="res-icon i-page">▤</span>
+        <span class="res-val" id="r-page">0</span>
+      </div>
+      <div class="res-item" title="转生货币，永久生效">
+        <span class="res-icon i-para">✦</span>
+        <span class="res-val" id="r-para">0</span>
+        <span class="res-rate" id="r-para-bonus">+0%</span>
+      </div>
+    </div>
+    <div class="acts">
+      <div class="speed" id="speed" title="测试用时间倍率，同时加速产出与战斗">
+        <button class="sp on" data-sp="1">1×</button>
+        <button class="sp" data-sp="2">2×</button>
+        <button class="sp" data-sp="4">4×</button>
+        <button class="sp" data-sp="8">8×</button>
+      </div>
+      <button class="btn ghost" id="btn-codex">图鉴</button>
+      <button class="btn ghost" id="btn-equip">装备</button>
+      <button class="btn ghost" id="btn-stats" title="查看悟性/严谨/直觉/雄辩分别换算成什么">属性</button>
+      <button class="btn ghost" id="btn-research" title="花范式立项，达成条件后永久生效">研究所</button>
+      <button class="btn ghost" id="btn-talent">天赋</button>
+      <button class="btn ghost" id="btn-craft">合成台</button>
+      <button class="btn ghost" id="btn-account" title="账号与云存档"><span id="net-state">登录 / 注册</span></button>
+      <button class="btn gold" id="btn-prestige">范式转移</button>
+    </div>
+  </header>
+
+  <main class="board">
+
+    <section class="col col-left">
+      <div class="panel">
+        <div class="panel-head">
+          <h2 id="school-name">力学学派</h2>
+          <span class="round-tabs" id="round-tabs">
+            <button data-r="0" class="on">1</button><button data-r="1">2</button><button data-r="2">3</button>
+          </span>
+        </div>
+        <div class="schools" id="schools"></div>
+        <div class="map" id="map"></div>
+        <div class="godbar" id="godbar" hidden></div>
+        <div class="godbar world" id="worldbar" hidden></div>
+        <div class="godbar abyss" id="abyssbar" hidden></div>
+        <div class="map-foot">
+          <span id="map-progress">进度 0 / 24</span>
+          <label class="switch">
+            <input type="checkbox" id="auto-advance" checked>
+            <span>自动推进</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>书桌</h2>
+          <div class="ph-right">
+            <span class="panel-note" id="desk-note">0 / 4 槽位</span>
+            <button class="mini gold" id="btn-lineup" title="根据当前敌人的弱点，给出书桌配置建议">阵容建议</button>
+          </div>
+        </div>
+        <div class="autos" id="autos">
+          <label class="switch" title="学会天赋后可开启"><input type="checkbox" id="auto-up-sw"><span>自动升级</span></label>
+          <label class="switch" title="学会天赋后可开启"><input type="checkbox" id="auto-desk-sw"><span>自动换书</span></label>
+        </div>
+        <div class="desk" id="desk"></div>
+        <p class="hint" id="desk-tip">槽位里的书会自动施放技能。</p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>图书馆</h2>
+          <span class="panel-note" id="card-note">0 / 3</span>
+        </div>
+        <div class="cards" id="cards"></div>
+      </div>
+    </section>
+
+    <section class="col col-mid">
+      <div class="panel stage">
+        <div class="stage-head">
+          <span class="stage-idx" id="stage-idx">第 1 轮 · 1 / 8</span>
+          <span class="stage-name" id="stage-name">惯性微粒</span>
+        </div>
+
+        <div class="arena">
+          <div class="enemy" id="enemy">
+            <div class="enemy-orb" id="enemy-emoji">🌀</div>
+            <div class="enemy-title" id="enemy-title">惯性微粒</div>
+            <div class="bar bar-hp"><i class="lag" id="enemy-lag"></i><i id="enemy-hp"></i><span id="enemy-hp-txt">0 / 0</span></div>
+            <div class="tags" id="enemy-tags"></div>
+          </div>
+
+          <div class="meta-row">
+            <span class="affinity" id="affinity-badge">相性 · 均势</span>
+            <span class="timer" id="timer">45.0s</span>
+          </div>
+
+          <div class="units" id="units" hidden></div>
+          <div class="morale" id="morale" hidden>
+            <span class="m-label">士气</span>
+            <div class="m-bar"><i id="morale-fill"></i></div>
+            <span class="m-tip" id="morale-tip">点战斗区积累</span>
+          </div>
+
+          <div class="self" id="self-panel">
+            <div class="self-top">你 · 学者<span class="st-more" id="btn-stats2">属性 ▸</span></div>
+            <div class="bar bar-mp"><i class="lag" id="self-lag"></i><i id="self-hp"></i><span id="self-hp-txt">120 / 120</span></div>
+            <div class="cds" id="cds"></div>
+          </div>
+        </div>
+
+        <div class="log" id="log"></div>
+
+        <div class="breakdown" id="breakdown">
+          <div class="bd-bar" id="bd-bar"></div>
+          <div class="bd-legend" id="bd-legend"></div>
+        </div>
+
+        <div class="verdict" id="verdict" hidden></div>
+
+        <div class="stage-foot">
+          <button class="btn ghost sm" id="btn-retreat">← 上一关</button>
+          <span class="dps" id="dps-txt">预估 DPS 0</span>
+          <button class="btn sm" id="btn-retry">重试本关</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="col col-right">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>书架</h2>
+          <span class="panel-note" id="shelf-note">1 / 12</span>
+        </div>
+        <div class="tabs" id="tabs">
+          <button class="tab on" data-tab="skill">技能书</button>
+          <button class="tab" data-tab="attr">属性书</button>
+        </div>
+        <div class="shelf" id="shelf"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="toast-wrap" id="toast-wrap"></div>
+  <button class="devbtn" id="devbtn" hidden title="开发者面板">⚙</button>
+</div>
+
+<div class="mask" id="mask">
+  <div class="dialog" id="dialog"></div>
+</div>
+
+<script src="assets/net.js?v=0.28"></script>
+<script src="assets/data.js?v=0.28"></script>
+<script src="assets/lore.js?v=0.28"></script>
+<script src="assets/game.js?v=0.28"></script>
+</body>
+</html>
