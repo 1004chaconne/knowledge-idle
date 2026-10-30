@@ -56,6 +56,18 @@
 
 战斗不是简单地把 `dt` 乘大——那样高速下技能会被吞掉（CD 跨帧只触发一次）。实际做法是每帧先算 `真实时间 × 倍率`，再用 **0.05 秒固定子步**循环结算，所以 8× 下技能释放频率与 1× 完全一致。
 
+## 部署（前端）
+
+```bash
+bash deploy/deploy.sh v0.30        # Git Bash / macOS / Linux
+deploy\deploy.cmd v0.30            # Windows 双击或命令行
+```
+
+自动做：改缓存版本号 → 跑回归测试 → md5 比对只传变化的文件 → 备份线上旧文件 → 上传 → 校验 md5 → 探活。
+
+**只动 `index.html` + `assets/`**，不碰 `server/`，不用重启 pm2。
+第一次在别的机器上用，先看 [`deploy/README.md`](deploy/README.md) 配 SSH 密钥。
+
 ## 文件结构
 
 ```
@@ -68,6 +80,7 @@ tools/sim.js        数值模拟器（不开浏览器就能扫参数）
 tools/e2e.js        端到端测试（CDP 驱动真实浏览器，38 项断言）
 tools/autoplay.js   高速自动跑图（验证长时间运行 + 测真实节奏）
 tools/measure.js    布局溢出检测（任意视口宽度）
+deploy/             部署脚本 + 台式机接入说明（deploy.sh / deploy.cmd / README.md）
 doc/                设计文档（含《学派扩展研究 v0.1》）
 ```
 
@@ -182,7 +195,7 @@ node tools/measure.js 390  # 检查手机宽度下横向溢出
 | 数据文件 | `/www/wwwroot/jieke/server/data/db.json` |
 | 每日备份 | crontab `20 4 * * *` → `server/backup.sh`，存 `data/backup/`，保留 30 天 |
 | Nginx 配置 | `/www/server/panel/vhost/nginx/jieke.iyunlai.com.cn.conf`（全量反代到 9400） |
-| 改前端后 | 直接覆盖 `assets/` 下文件即可，服务端已设 `no-cache`，玩家刷新就生效，**不用重启进程** |
+| 改前端后 | 走 `bash deploy/deploy.sh v0.30`（Windows 可 `deploy\deploy.cmd v0.30`），会自动 +1 缓存版本、只传有变化的文件、备份旧文件并探活。详见 `deploy/README.md`。**不要手搓 scp** —— 忘了改 `?v=` 玩家会一直吃旧 JS |
 | 改服务端后 | 覆盖 `server/src/` 后 `pm2 restart sapere-game` |
 - **周常世界 BOSS「遗忘」**：理念世界由"被记住的东西"构成，遗忘每周回来擦掉一点。周一刷新、每周 3 次、血量 ×2.2、三阶段「遗忘加深」（66%/33% 时攻击 +20% 并说话）；赢 → 书页 + 记忆强化（永久 +1% 全局，上限 +10%）；输 → 书页 -5% + 随机一本等级 -1（硬下限 1 级）；同一周所有玩家面对同一套配置（周号哈希）。全服共享版需服务端，方案见 `doc/世界BOSS-遗忘-v0.1.md`
 - **成就系统**：30 条 × 5 类（学派之路/收藏家/战斗纪念/纪元与范式/通晓者），图鉴第 6 页，可领取时图鉴按钮红点呼吸提示；奖励只给书页+洞见，不给范式点

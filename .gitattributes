@@ -3,6 +3,12 @@
 # 一旦 git 把 LF 转成 CRLF，md5 就变了，会误判成"文件被改过"。
 * -text
 
+# 脚本按各自平台的换行符存/取（上面 * -text 的例外，放在后面覆盖）
+# —— bash 脚本一旦带 CRLF 会报 "$'\r': command not found"
+*.sh  text eol=lf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
 # 二进制资源明确标记（避免被当文本 diff）
 *.png binary
 *.jpg binary
